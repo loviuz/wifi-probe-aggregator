@@ -6,3 +6,4 @@ E' composto da:
  - **web service**: raccoglie i dati inviati dal reader, li salva su database e li restituisce alla GUI
  - **GUI**: visualizza e interpreta i dati salvati per analisi e statistiche
 
+![alt text](https://github.com/loviuz/wifi-probe-aggregator/blob/master/sketch.png?raw=true)
