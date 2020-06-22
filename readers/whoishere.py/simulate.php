@@ -60,3 +60,6 @@ $response = curl_exec($ch);
 
 // Chiusura handler
 curl_close($ch);
+
+// Debug
+echo "STRINGA INVIATA:\n".json_encode($post_data);
