@@ -6,7 +6,7 @@
 
 
 // URL dell'endpoint che riceve i dati
-$receiver_url = "http://localhost/receiver.php";
+$receiver_url = "http://localhost/wifi-probe-aggregator/ws/receiver.php";
 
 // Lista di indirizzi MAC
 $mac_addresses = [
@@ -62,4 +62,4 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 // Debug
-echo "STRINGA INVIATA:\n".json_encode($post_data);
+echo $response;
