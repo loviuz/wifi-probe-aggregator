@@ -22,11 +22,9 @@ def ConfigCheck():
 		file = open(filename, "w")
 		file.write('{'\
 		'"config" : [{"interface": "wlan0mon"},\n'\
-		'            {"pushoverapitoken": ""},\n'\
-		'            {"pushoveruserkey": "" }],\n'\
-		'"list"   : [{"name": "James Clerk Maxwell", "mac": "00:co:ca:c0:79:fa", "color": "1"},\n'\
-		'            {"name": "Christian Hulsmeyer", "mac": "ba:ad:c0:de:88:ca", "color": "2"},\n'\
-        	'	     {"name": "Heinrich Hertz", "mac": "e0:0f:00:0a:d0:a0", "color": "3"}]\n'\
+		'            {"receiver_host": ""},\n'\
+		'            {"receiver_url": "" }],\n'\
+		'"list"   : []\n'\
 		'}')
 		file.close()
 		print "\033[93m\033[1m[+]\033[0m Example configuration file created: \033[94m\033[1m[" + filename + "]\033[0m\n"
@@ -42,12 +40,6 @@ def ConfigCheck():
 			print "\033[91mSomething is wrong with the configuration file."
 			print "Edit or delete "+filename+" and try again.\033[0m\n\n"
 			exit()
-	global pushoverenabled
-        if str(list[0]['config'][1]['pushoverapitoken']) != "" :
-                pushoverenabled = "Enabled"
-        else :
-                pushoverenabled = "Disabled"
-
 
 def Welcome() :
 	banner = "\n".join([
@@ -75,7 +67,6 @@ def PrintConfig() :
         print "    Configuration File      \033[94m\033[1m[" + filename + "]\033[0m"
 	print "    Log File                \033[94m\033[1m[" + logfilename + "]\033[0m"
 	print "    Monitor Interface       \033[94m\033[1m[" + interface + "]\033[0m"
-	print "    Pushover Notifications  \033[94m\033[1m[" + pushoverenabled + "]\033[0m\n"
 	print "\n\033[92m\033[1m[+]\033[0m Listening for probe requests...\n"
 
 def GetOUI(pkt) :
@@ -91,7 +82,7 @@ def SearchList(pkt) :
 	global name
 	name = "(Unknown)"
         COLOR = ""
-	if pkt.info == "" : pkt.info = "(Hidden)"
+	if pkt.info == "" : pkt.info = ""
 	for i in range(len(list[0]['list'])) :
 		if pkt.addr2 == list[0]['list'][i]['mac'] :
 			name = list[0]['list'][i]['name']
@@ -105,46 +96,46 @@ def PrintInfo(pkt) :
 	SSID = " SSID: " + pkt.info.ljust(maxlenght)[0:maxlenght]
 	OUI = " OUI: "+ oui
 	db = -(256-ord(pkt.notdecoded[-4:-3]))
-        if db <= -100:
-                quality = 0
-        elif db >= -50:
-                quality = 100
-        else:
-                quality = 2 * (db + 100)
-        quality = str(quality)+"%"
-        quality = " SIGNAL: " + quality.ljust(4, ' ')
-        fingerprint = COLOR + timea + quality + namef + mac + SSID + OUI +'\033[0m'
+	if db <= -100:
+		quality = 0
+	elif db >= -50:
+		quality = 100
+	else:
+		quality = 2 * (db + 100)
+	quality = str(quality)+"%"
+	quality = " SIGNAL: " + quality.ljust(4, ' ')
+	fingerprint = COLOR + timea + quality + namef + mac + SSID + OUI +'\033[0m'
+	
 	if fingerprint not in uniquefingerprint :
 		uniquefingerprint.append(fingerprint)
-        	print fingerprint
-		if COLOR == '\033[9'+'1'+'m' :
-			pushover_notification(fingerprint[22:-3])
+    		print fingerprint
+		json_notification(pkt.addr2, pkt.info.ljust(maxlenght)[0:maxlenght], db, 0, 0)
 
 def WriteLog(fingerprint):
         file = open(logfilename, "a")
         file.write(fingerprint + "\n")
         file.close()
 
-
 def PacketHandler(pkt) :
         if pkt.haslayer(Dot11ProbeReq) :
         	GetOUI(pkt)
 		SearchList(pkt)
 		PrintInfo(pkt)
-		WriteLog(fingerprint)
 
 def signal_handler(signal, frame):
         print "\n\033[92m\033[1m[+]\033[0m Exiting...\n"
         sys.exit(0)
 
-def pushover_notification(fingerprint):
-	conn = httplib.HTTPSConnection("api.pushover.net:443")
-	conn.request("POST", "/1/messages.json",
-  	urllib.urlencode({
-	"token": str(list[0]['config'][1]['pushoverapitoken']),
-	"user": str(list[0]['config'][2]['pushoveruserkey']),
-    	"message": fingerprint,
-  	}), { "Content-type": "application/x-www-form-urlencoded" })
+def json_notification(mac, ssid, dbm, latitude, longitude):
+	data = {}
+	data['address'] = str(mac)
+	data['essid'] = str(ssid)
+	data['signal'] = str(dbm)
+	data['latitude'] = str(latitude)
+	data['longitude'] = str(longitude)
+
+	conn = httplib.HTTPConnection(list[0]['config'][1]['receiver_host'])
+	conn.request("POST", list[0]['config'][2]['receiver_url'], json.dumps(data), { "Content-type": "application/x-www-form-urlencoded" })
 	conn.getresponse()
 
 

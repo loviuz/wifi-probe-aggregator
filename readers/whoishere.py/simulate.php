@@ -4,9 +4,11 @@
  * Script per simulare l'invio al web service di MAC address raccolti nelle vicinanze
  */
 
+ // Lettura file di configurazione
+$config = parse_ini_file('../../config.ini');
 
 // URL dell'endpoint che riceve i dati
-$receiver_url = "http://localhost/wifi-probe-aggregator/ws/receiver.php";
+$receiver_url = $config['receiver_url'];
 
 // Lista di indirizzi MAC
 $mac_addresses = [
@@ -45,7 +47,7 @@ $ap = [
 $post_data = [
     "address" => $mac_addresses[ rand(0, sizeof($mac_addresses)-1) ],
     "essid" => $ap[ rand(0, sizeof($ap)-1) ],
-    "signal" => rand(0, 100),
+    "signal" => rand(-30, -100),
     "latitude" => 41.909986,
     "longitude" => 12.3959152,
 ];
