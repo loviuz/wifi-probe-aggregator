@@ -3,7 +3,7 @@
 --
 
 CREATE TABLE `logs` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `mac` varchar(17) NOT NULL,
   `ssid` varchar(255) NOT NULL,
   `dbm` tinyint(4) NOT NULL,
