@@ -299,7 +299,7 @@ switch( $_POST['op'] ){
             $sql = "
                 SELECT
                     SUBSTRING(mac, 1, 8) AS indice,
-                    COUNT(mac) AS valore
+                    COUNT(DISTINCT(mac)) AS valore
                 FROM
                     `logs`
                 GROUP BY
