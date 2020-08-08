@@ -16,6 +16,7 @@ $config = parse_ini_file('../config.ini');
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="css/wpa.css" rel="stylesheet">
 
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>

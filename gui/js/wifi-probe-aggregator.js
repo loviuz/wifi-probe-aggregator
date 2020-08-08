@@ -32,7 +32,7 @@ function leggi_devices(interval){
                 if( $('#devices-table > tbody').find('tr[data-id="' + row_id + '"]').length == 0 ){
                     $('#devices-table > tbody').prepend(
                         '<tr data-id="' + row_id + '">' +
-                        '<td></td>' + 
+                        '<td class="vendor-img"><img title="' + result.records[i].vendor + '" src="vendor.php?name=' + result.records[i].vendor + '"></td>' + 
                         '<td>' + device + '</td>' +
                         '<td>' + result.records[i].ssid + '</td>' +
                         '<td><time class="timeago" title="' + moment(result.records[i].received_at).format('DD/MM/YYYY H:mm:ss') + '" datetime="' + result.records[i].received_at + '"></time></td>' +
