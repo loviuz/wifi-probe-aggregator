@@ -17,6 +17,27 @@ $config = parse_ini_file('../config.ini');
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+
+  <script>
+    var reader_url = '<?php echo $config['reader_url']; ?>';
+  </script>
+
+  <script src="js/moment.min.js"></script>
+  <script src="js/jquery.timeago.js"></script>
+  <script src="js/jquery.timeago.it.js"></script>
+  <script src="js/wifi-probe-aggregator.js"></script>
+
+  <!-- Page level plugins -->
+  <script src="vendor/chart.js/Chart.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -28,7 +49,7 @@ $config = parse_ini_file('../config.ini');
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-wifi"></i>
         </div>
@@ -39,8 +60,8 @@ $config = parse_ini_file('../config.ini');
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Dashboard -->
-      <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+      <li class="nav-item" id="menu-dashboard">
+        <a class="nav-link" href="index.php">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
@@ -53,21 +74,28 @@ $config = parse_ini_file('../config.ini');
         Cerca
       </div>
 
-      <li class="nav-item">
+      <li class="nav-item" id="menu-mappa">
         <a class="nav-link" href="#">
           <i class="fas fa-fw fa-map"></i>
           <span>Mappa</span>
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" id="menu-orari">
+        <a class="nav-link" href="orari.php">
+          <i class="fas fa-fw fa-clock"></i>
+          <span>Orari</span>
+        </a>
+      </li>
+
+      <li class="nav-item" id="menu-luoghi">
         <a class="nav-link" href="#">
           <i class="fas fa-fw fa-marker"></i>
           <span>Luoghi</span>
         </a>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" id="menu-ap">
         <a class="nav-link" href="#">
           <i class="fas fa-fw fa-signal"></i>
           <span>Access Point</span>

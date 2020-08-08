@@ -1,31 +1,3 @@
-$(document).ready( function(){
-    // Intervallo in secondi fra ogni lettura dati
-    var interval = 5;
-
-    // Timeout per indicare che un dispositivo era online
-    var timeout_online_check = 30;
-
-    // Prime lettura
-    leggi_devices(60);
-    online_devices(timeout_online_check);
-
-    // Lettura dispositivi ogni X secondi
-    setInterval(
-        function(){
-            leggi_devices(interval);
-        },
-        interval*1000
-    );
-
-    // Lettura numero di dispositivi ogni 30 secondi
-    setInterval(
-        function(){
-            online_devices(timeout_online_check);
-        },
-        interval*1000
-    );
-});
-
 function leggi_devices(interval){
     var date_start = moment().subtract(interval, 'seconds').format('YYYY-MM-DD H:mm:ss');
     var date_end = moment().format('YYYY-MM-DD H:mm:ss');
@@ -89,4 +61,29 @@ function online_devices(interval){
             $('#online-devices').text(result.records);
         }
     }, 'json');
+}
+
+function number_format(number, decimals, dec_point, thousands_sep) {
+    // *     example: number_format(1234.56, 2, ',', ' ');
+    // *     return: '1 234,56'
+    number = (number + '').replace(',', '').replace(' ', '');
+    var n = !isFinite(+number) ? 0 : +number,
+      prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+      sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+      dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+      s = '',
+      toFixedFix = function(n, prec) {
+        var k = Math.pow(10, prec);
+        return '' + Math.round(n * k) / k;
+      };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+    if (s[0].length > 3) {
+      s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+    }
+    if ((s[1] || '').length < prec) {
+      s[1] = s[1] || '';
+      s[1] += new Array(prec - s[1].length + 1).join('0');
+    }
+    return s.join(dec);
 }
