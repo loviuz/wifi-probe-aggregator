@@ -35,11 +35,11 @@ if (!empty($data) ){
             ];
         } else {
             if ($stmt->bind_param('ssidd', $mac, $ssid, $dbm, $latitude, $longitude)) {
-                $mac = $data->address;
-                $ssid = $data->essid;
-                $dbm = $data->signal;
-                $latitude = $data->latitude;
-                $longitude = $data->longitude;
+                $mac = trim($data->address);
+                $ssid = trim($data->essid);
+                $dbm = trim($data->signal);
+                $latitude = trim($data->latitude);
+                $longitude = trim($data->longitude);
 
                 // Esecuzione statement
                 $stmt->execute();
