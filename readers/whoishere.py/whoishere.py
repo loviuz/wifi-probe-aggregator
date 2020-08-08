@@ -95,7 +95,7 @@ def PrintInfo(pkt) :
 	mac = " MAC: " + pkt.addr2
 	SSID = " SSID: " + pkt.info.ljust(maxlenght)[0:maxlenght]
 	OUI = " OUI: "+ oui
-	db = -(256-ord(pkt.notdecoded[-4:-3]))
+	db = pkt.dBm_AntSignal
 	if db <= -100:
 		quality = 0
 	elif db >= -50:
