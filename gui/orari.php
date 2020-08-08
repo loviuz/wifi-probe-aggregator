@@ -46,8 +46,8 @@ include('parts/header.php');
 <script>
   $('#menu-orari').addClass('active');
 
-  drawLineChart( 'chart-orari', 'get-devices-by-hour' );
-  drawLineChart( 'chart-giorno', 'get-devices-by-weekday' );
+  drawBarChart( 'chart-orari', 'get-devices-by-hour' );
+  drawBarChart( 'chart-giorno', 'get-devices-by-weekday' );
 </script>
 
 <?php

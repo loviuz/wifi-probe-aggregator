@@ -95,7 +95,7 @@ Date.prototype.formatMMDDYYYY = function() {
     "/" +  this.getFullYear();
 }
 
-function drawLineChart( id, resource ) {
+function drawBarChart( id, resource ) {
     $.post( reader_url, { op: resource }, function(response){
         response = $.parseJSON(response);
 
@@ -189,4 +189,80 @@ function drawLineChart( id, resource ) {
             }
         });
     });
+}
+
+
+function drawPieChart( id, resource ) {
+    $.post( reader_url, { op: resource }, function(response){
+        response = $.parseJSON(response);
+
+        // Split timestamp and data into separate arrays
+        var labels = [], data=[], extra_data=[], colors=[];
+        for( i=0; i<response.records.length; i++ ){
+            result = response.records[i];
+            
+            labels.push(result.indice);
+            data.push(result.valore);
+            extra_data.push(result.valore_extra);
+            colors.push( getRandomColor() );
+        }
+
+        // Create the chart.js data structure using 'labels' and 'data'
+        var full_chart_data = {
+            labels : labels,
+            datasets : [{
+                backgroundColor : colors,
+                data            : data
+            }]
+        };
+
+        // Get the context of the canvas element we want to select
+        var ctx = document.getElementById(id).getContext("2d");
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: full_chart_data,
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    displayColors: true,
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function(tooltipItem, chart) {
+                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                            return extra_data[ tooltipItem.index ] + ' devices';
+                        }
+                    }
+                },
+            }
+        });
+    });
+}
+
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }

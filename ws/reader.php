@@ -10,6 +10,7 @@ $result = [];
 
 switch( $_POST['op'] ){
     case 'get-last-devices':
+        // Vendor cache
         $oui = file_get_contents($config['oui_path']);
 
         if (!empty($_POST['date_start']) && !empty($_POST['date_end'])) {
@@ -263,6 +264,75 @@ switch( $_POST['op'] ){
                 
                 while ($row = $rs->fetch_assoc()) {
                     $row['indice'] = $weekdays[ $row['indice'] ];
+                    $records[] = $row;
+                }
+
+                $result = [
+                    'status' => 'OK',
+                    'records' => $records,
+                ];
+            }
+        }
+
+        echo json_encode($result);
+
+        $stmt->close();
+        $mysqli->close();
+    break;
+
+
+    case 'get-devices-by-vendor':
+        // Vendor cache
+        $oui = file_get_contents($config['oui_path']);
+
+        // Connessione al database
+        $mysqli = mysqli_connect($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
+
+        // Errore nella connessione a database
+        if (mysqli_connect_errno($mysqli)) {
+                
+            $result = [
+                'status' => 'ERR',
+                'message' => mysqli_connect_error(),
+            ];
+        } else {
+            $sql = "
+                SELECT
+                    SUBSTRING(mac, 1, 8) AS indice,
+                    COUNT(mac) AS valore
+                FROM
+                    `logs`
+                GROUP BY
+                    SUBSTRING(mac, 1, 8)
+                ORDER BY
+                    valore DESC
+                LIMIT
+                    0, 10";
+
+            $stmt = $mysqli->prepare($sql);
+            
+            // Errore nella preparazione query
+            if (!$stmt) {
+                $result = [
+                    'status' => 'ERR',
+                    'message' => $mysqli->error,
+                ];
+            } else {
+                // Esecuzione statement
+                $stmt->execute();
+
+                $rs = $stmt->get_result();
+                
+                while ($row = $rs->fetch_assoc()) {
+                    // Lettura vendor
+                    $mac = str_replace( ':', '-', substr($row['indice'], 0, 8) );
+
+                    $row['valore_extra'] = '';
+
+                    if( preg_match( '/^'.preg_quote($mac).'([\s\t]+)\(hex\)(.+?)$/im', $oui, $m) ){
+                        $row['valore_extra'] = trim($m[2]);
+                    }
+
                     $records[] = $row;
                 }
 
