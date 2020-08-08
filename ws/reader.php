@@ -10,6 +10,8 @@ $result = [];
 
 switch( $_POST['op'] ){
     case 'get-last-devices':
+        $oui = file_get_contents($config['oui_path']);
+
         if (!empty($_POST['date_start']) && !empty($_POST['date_end'])) {
             // Connessione al database
             $mysqli = mysqli_connect($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
@@ -53,6 +55,15 @@ switch( $_POST['op'] ){
                                 } else {
                                     $row['dbm'] = 2 * ($row['dbm'] + 100);
                                 }
+                            }
+
+                            // Lettura vendor
+                            $mac = str_replace( ':', '-', substr($row['mac'], 0, 8) );
+
+                            $row['vendor'] = '';
+
+                            if( preg_match( '/^'.preg_quote($mac).'([\s\t]+)\(hex\)(.+?)$/im', $oui, $m) ){
+                                $row['vendor'] = trim($m[2]);
                             }
 
                             $records[] = $row;

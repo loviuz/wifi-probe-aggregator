@@ -1,6 +1,7 @@
 [ws]
 receiver_url = "http://localhost/wifi-probe-aggregator/ws/receiver.php"
 reader_url = "http://localhost/wifi-probe-aggregator/ws/reader.php"
+oui_path = "/var/lib/ieee-data/oui.txt"
 
 [database]
 db_host = "localhost"
