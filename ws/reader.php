@@ -327,7 +327,7 @@ switch( $_POST['op'] ){
                     // Lettura vendor
                     $mac = str_replace( ':', '-', substr($row['indice'], 0, 8) );
 
-                    $row['valore_extra'] = '';
+                    $row['valore_extra'] = 'sconosciuto';
 
                     if( preg_match( '/^'.preg_quote($mac).'([\s\t]+)\(hex\)(.+?)$/im', $oui, $m) ){
                         $row['valore_extra'] = trim($m[2]);
