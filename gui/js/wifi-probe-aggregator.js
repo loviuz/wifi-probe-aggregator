@@ -6,7 +6,7 @@ $(document).ready( function(){
     var timeout_online_check = 30;
 
     // Prime lettura
-    leggi_devices(interval);
+    leggi_devices(60);
     online_devices(timeout_online_check);
 
     // Lettura dispositivi ogni X secondi
