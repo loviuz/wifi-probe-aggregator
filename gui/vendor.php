@@ -3,7 +3,7 @@
 header('Content-Type: image/png');
 
 $docroot = realpath(__DIR__);
-$vendor_name = preg_replace( '/([^a-z0-9\.\-\(\)\s]+)/i', '', $_GET['name'] );
+$vendor_name = preg_replace( '/([^a-z0-9\.,\-\(\)\s]+)/i', '', $_GET['name'] );
 
 $vendor_img = $docroot.'/img/vendors/'.$vendor_name.'.png';
 
