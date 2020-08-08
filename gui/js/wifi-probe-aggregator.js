@@ -87,3 +87,106 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     }
     return s.join(dec);
 }
+
+// Add a helper to format timestamp data
+Date.prototype.formatMMDDYYYY = function() {
+    return (this.getMonth() + 1) +
+    "/" +  this.getDate() +
+    "/" +  this.getFullYear();
+}
+
+function drawLineChart( id, resource ) {
+    $.post( reader_url, { op: resource }, function(response){
+        response = $.parseJSON(response);
+
+        // Split timestamp and data into separate arrays
+        var labels = [], data=[]
+        for( i=0; i<response.records.length; i++ ){
+            result = response.records[i];
+            
+            labels.push(result.indice);
+            data.push(parseInt(result.valore));
+        }
+
+        // Create the chart.js data structure using 'labels' and 'data'
+        var full_chart_data = {
+            labels : labels,
+            datasets : [{
+                fillColor             : "rgba(151,187,205,0.2)",
+                strokeColor           : "rgba(151,187,205,1)",
+                pointColor            : "rgba(151,187,205,1)",
+                pointStrokeColor      : "#fff",
+                pointHighlightFill    : "#fff",
+                pointHighlightStroke  : "rgba(151,187,205,1)",
+                backgroundColor       : "#4e73df",
+                hoverBackgroundColor  : "#2e59d9",
+                borderColor           : "#4e73df",
+                data                  : data
+            }]
+        };
+
+        // Get the context of the canvas element we want to select
+        var ctx = document.getElementById(id).getContext("2d");
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: full_chart_data,
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 6
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            maxTicksLimit: 5,
+                            padding: 10,
+                        },
+                        gridLines: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    displayColors: true,
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function(tooltipItem, chart) {
+                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                            return tooltipItem.yLabel + ' devices';
+                        }
+                    }
+                },
+            }
+        });
+    });
+}
