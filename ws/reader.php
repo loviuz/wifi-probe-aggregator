@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 
 // Lettura file di configurazione
 $config = parse_ini_file('../config.ini');
