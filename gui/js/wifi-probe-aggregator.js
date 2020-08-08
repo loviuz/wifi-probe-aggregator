@@ -58,7 +58,7 @@ function leggi_devices(interval){
                 row_id = 'mac_' + (result.records[i].mac).replace(/:/g, '_');
 
                 if( $('#devices-table > tbody').find('tr[data-id="' + row_id + '"]').length == 0 ){
-                    $('#devices-table > tbody').append(
+                    $('#devices-table > tbody').prepend(
                         '<tr data-id="' + row_id + '">' +
                         '<td></td>' + 
                         '<td>' + device + '</td>' +
