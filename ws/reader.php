@@ -280,6 +280,128 @@ switch( $_POST['op'] ){
         $mysqli->close();
     break;
 
+    case 'get-activity-by-hour':
+        // Connessione al database
+        $mysqli = mysqli_connect($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
+
+        // Errore nella connessione a database
+        if (mysqli_connect_errno($mysqli)) {
+                
+            $result = [
+                'status' => 'ERR',
+                'message' => mysqli_connect_error(),
+            ];
+        } else {
+            // Lettura numero di device unico nell'intervallo di date
+            $sql = "
+                SELECT
+                    CONCAT( DATE_FORMAT(received_at, '%H'), ':00' ) AS indice,
+                    COUNT(id) AS valore
+                FROM
+                    `logs`
+                WHERE
+                    mac='".$_POST['mac']."'
+                GROUP BY
+                    DATE_FORMAT(received_at, '%H')";
+
+            $stmt = $mysqli->prepare($sql);
+            
+            // Errore nella preparazione query
+            if (!$stmt) {
+                $result = [
+                    'status' => 'ERR',
+                    'message' => $mysqli->error,
+                ];
+            } else {
+                // Esecuzione statement
+                $stmt->execute();
+
+                $rs = $stmt->get_result();
+                
+                while ($row = $rs->fetch_assoc()) {
+                    $records[] = $row;
+                }
+
+                $result = [
+                    'status' => 'OK',
+                    'records' => $records,
+                ];
+            }
+        }
+
+        echo json_encode($result);
+
+        $stmt->close();
+        $mysqli->close();
+    break;
+
+
+    case 'get-activity-by-weekday':
+        $weekdays = [
+            0 => 'domenica',
+            1 => 'lunedì',
+            2 => 'martedì',
+            3 => 'mercoledì',
+            4 => 'giovedì',
+            5 => 'venerdì',
+            6 => 'sabato',
+        ];
+
+        // Connessione al database
+        $mysqli = mysqli_connect($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
+
+        // Errore nella connessione a database
+        if (mysqli_connect_errno($mysqli)) {
+                
+            $result = [
+                'status' => 'ERR',
+                'message' => mysqli_connect_error(),
+            ];
+        } else {
+            // Lettura numero di device unico nell'intervallo di date
+            $sql = "
+                SELECT
+                    DATE_FORMAT(received_at, '%w') AS indice,
+                    COUNT(id) AS valore
+                FROM
+                    `logs`
+                WHERE
+                    mac='".$_POST['mac']."'
+                GROUP BY
+                    DATE_FORMAT(received_at, '%w')";
+
+            $stmt = $mysqli->prepare($sql);
+            
+            // Errore nella preparazione query
+            if (!$stmt) {
+                $result = [
+                    'status' => 'ERR',
+                    'message' => $mysqli->error,
+                ];
+            } else {
+                // Esecuzione statement
+                $stmt->execute();
+
+                $rs = $stmt->get_result();
+                
+                while ($row = $rs->fetch_assoc()) {
+                    $row['indice'] = $weekdays[ $row['indice'] ];
+                    $records[] = $row;
+                }
+
+                $result = [
+                    'status' => 'OK',
+                    'records' => $records,
+                ];
+            }
+        }
+
+        echo json_encode($result);
+
+        $stmt->close();
+        $mysqli->close();
+    break;
+
 
     case 'get-devices-by-vendor':
         // Vendor cache

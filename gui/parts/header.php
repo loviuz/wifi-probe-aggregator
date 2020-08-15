@@ -35,6 +35,7 @@ $config = parse_ini_file('../config.ini');
   <script src="js/moment.min.js"></script>
   <script src="js/jquery.timeago.js"></script>
   <script src="js/jquery.timeago.it.js"></script>
+  <script src="js/util.js"></script>
   <script src="js/wifi-probe-aggregator.js"></script>
 
   <!-- Page level plugins -->

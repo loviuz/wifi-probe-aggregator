@@ -1,3 +1,7 @@
 td.vendor-img > img{
     width: 40px;
 }
+
+.clickable{
+    cursor: pointer;
+}

@@ -29,9 +29,9 @@ function leggi_devices(interval){
                 // Aggiungo il dispositivo in lista se ancora non c'è
                 row_id = 'mac_' + (result.records[i].mac).replace(/:/g, '_');
 
-                if( $('#devices-table > tbody').find('tr[data-id="' + row_id + '"]').length == 0 ){
+                if( $('#devices-table > tbody').find('tr[id="' + row_id + '"]').length == 0 ){
                     $('#devices-table > tbody').prepend(
-                        '<tr data-id="' + row_id + '">' +
+                        '<tr class="clickable" id="' + row_id + '" data-name="' + (result.records[i].nome != null ? result.records[i].nome : '' ) + '" data-mac="' + result.records[i].mac + '">' +
                         '<td class="vendor-img"><img title="' + result.records[i].vendor + '" src="vendor.php?name=' + result.records[i].vendor + '"></td>' + 
                         '<td>' + device + '</td>' +
                         '<td>' + result.records[i].ssid + '</td>' +
@@ -39,6 +39,11 @@ function leggi_devices(interval){
                         '<td><div class="progress"><div class="progress-bar bg-' + progress_class + '" style="width:' + result.records[i].dbm + '%;"></div></div></td>' +
                         '</tr>'
                     );
+
+                    // Bind modal
+                    $('#' + row_id).on('click', function(){
+                        openModal( 'Dettagli su <b>' + $(this).data('name') + '</b> ' + $(this).data('mac'), 'ajax.php?op=get-details&mac=' + $(this).data('mac') );
+                    });
                 }
             }
 
@@ -95,8 +100,8 @@ Date.prototype.formatMMDDYYYY = function() {
     "/" +  this.getFullYear();
 }
 
-function drawBarChart( id, resource ) {
-    $.post( reader_url, { op: resource }, function(response){
+function drawBarChart( id, resource, mac ) {
+    $.post( reader_url, { op: resource, mac: mac }, function(response){
         response = $.parseJSON(response);
 
         // Split timestamp and data into separate arrays
@@ -182,7 +187,7 @@ function drawBarChart( id, resource ) {
                     callbacks: {
                         label: function(tooltipItem, chart) {
                             var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                            return tooltipItem.yLabel + ' devices';
+                            return tooltipItem.yLabel;
                         }
                     }
                 },
