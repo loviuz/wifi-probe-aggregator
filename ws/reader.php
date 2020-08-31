@@ -470,4 +470,69 @@ switch( $_POST['op'] ){
         $stmt->close();
         $mysqli->close();
     break;
+
+
+    case 'get-presence-per-day':
+        // Connessione al database
+        $mysqli = mysqli_connect($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
+
+        // Errore nella connessione a database
+        if (mysqli_connect_errno($mysqli)) {
+                
+            $result = [
+                'status' => 'ERR',
+                'message' => mysqli_connect_error(),
+            ];
+        } else {
+            // Lettura presenza per giorno
+            $sql = "
+                SELECT
+                    DATE_FORMAT(received_at, '%Y-%m-%d') AS giorno,
+                    COUNT(id) AS valore
+                FROM
+                    `logs`
+                WHERE
+                    `mac` = ? AND received_at BETWEEN ? AND ?
+                GROUP BY
+                    DATE_FORMAT(received_at, '%Y-%m-%d')
+                ORDER BY
+                    received_at ASC";
+            
+
+            $stmt = $mysqli->prepare($sql);
+    
+            // Errore nella preparazione query
+            if (!$stmt) {
+                $result = [
+                    'status' => 'ERR',
+                    'message' => $mysqli->error,
+                ];
+            } else {
+                if ($stmt->bind_param('sss', $mac, $date_start, $date_end)) {
+                    $mac = $_POST['mac'];
+                    $date_start = $_POST['date_start'];
+                    $date_end = $_POST['date_end'];
+                
+                    // Esecuzione statement
+                    $stmt->execute();
+
+                    $rs = $stmt->get_result();
+                    
+                    while ($row = $rs->fetch_assoc()) {
+                        $records[ $row['giorno'] ] = $row;
+                    }
+
+                    $result = [
+                        'status' => 'OK',
+                        'records' => (array)$records,
+                    ];
+                }
+            }
+        }
+
+        echo json_encode($result);
+
+        $stmt->close();
+        $mysqli->close();
+    break;
 }
